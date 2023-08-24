@@ -7,10 +7,11 @@ public class PlayerController : MonoBehaviour
     private bool normalDimension;
     private float forwardInput;
     private float speed = 3.0f;
-    private float jumpSpeed = 5.0f;
+    private float jumpSpeed = 8.0f;
     private bool isOnGround;
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
+    private Animator animator;
     private bool isInShadowCoroutine = false;  // Flag to check if coroutine is active
 
     public GameObject firePrefab;  // Drag your bullet (fire) prefab here in the inspector
@@ -20,6 +21,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
     }
 
     void Start()
@@ -35,6 +37,7 @@ public class PlayerController : MonoBehaviour
 
         if (forwardInput != 0)
         {
+            animator.SetFloat("speed", Mathf.Abs(forwardInput));
             Run();
         }
 
@@ -42,6 +45,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && isOnGround)
         {
             isOnGround = false;
+            animator.SetBool("jump", true);
             Jump();
         }
 
@@ -60,7 +64,6 @@ public class PlayerController : MonoBehaviour
     private void Run()
     {
         transform.Translate(Vector3.right * forwardInput * speed * Time.deltaTime);
-
         // Flip the player sprite based on movement direction
         spriteRenderer.flipX = forwardInput < 0;
     }
@@ -130,6 +133,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isOnGround = true;
+            animator.SetBool("jump", false);
         }
         // When in the "normal dimension", the player can interact with (stand on, collide with) "normal" platforms and pass through "shadow" platforms.
         if (normalDimension && collision.gameObject.CompareTag("Normal Enemy"))
