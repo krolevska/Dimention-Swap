@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     public Transform player;
-    public float smoothSpeed = 1.025f;
+    public float smoothSpeed = 0.025f;
     public Vector3 offset;
     // Start is called before the first frame update
     void Start()

@@ -5,8 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
-  - Normal Enemy
   - Fire
+  - Enemy
+  - Collectible
+  - Powerup
   layers:
   - Default
   - TransparentFX

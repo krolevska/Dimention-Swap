@@ -6,7 +6,7 @@ public class Enemy : MonoBehaviour
     public float maxHealth; 
     private float currentHealth;
 
-    public float speed = 2f;
+    public float speed = 1.5f;
     public float patrolDistance = 3f; // Distance in units the enemy will move left and right
 
     private float originalX;
@@ -16,10 +16,11 @@ public class Enemy : MonoBehaviour
     public float chaseSpeed = 2.5f;
 
     private FireBehaviour fireBehaviourCache;
-
+    private Animator animator;
     private void Start()
     {
         originalX = transform.position.x;
+        animator = gameObject.GetComponent<Animator>();
     }
 
     private void Awake()
@@ -51,6 +52,7 @@ public class Enemy : MonoBehaviour
     }
     void ChasePlayer()
     {
+        animator.SetFloat("speed", chaseSpeed);
         FlipSprite();
         // Move the enemy towards the player's position
         transform.position = Vector2.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);
@@ -58,13 +60,14 @@ public class Enemy : MonoBehaviour
 
     void Patrol()
     {
+        animator.SetFloat("speed", speed);
         FlipSprite();
         transform.position = new Vector2(originalX + Mathf.PingPong(Time.time * speed, patrolDistance * 2) - patrolDistance, transform.position.y);
     }
 
     private void FlipSprite()
     {
-        bool playerIsLeftOfEnemy = player.position.x > transform.position.x;
+        bool playerIsLeftOfEnemy = player.position.x < transform.position.x;
         if ((playerIsLeftOfEnemy && transform.localScale.x > 0) || (!playerIsLeftOfEnemy && transform.localScale.x < 0))
         {
             Vector3 enemyScale = transform.localScale;
@@ -82,6 +85,7 @@ public class Enemy : MonoBehaviour
                 fireBehaviourCache = collision.gameObject.GetComponent<FireBehaviour>();
             // Decrease health by 1/4
             currentHealth -= maxHealth / fireBehaviourCache.FireStrength;
+            animator.SetTrigger("bullet");
 
             // If health goes below 0, handle enemy death.
             if (currentHealth <= 0)

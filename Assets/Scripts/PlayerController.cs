@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
     private bool normalDimension;
     private float forwardInput;
     private float speed = 3.0f;
-    private float jumpSpeed = 8.0f;
+    private float jumpSpeed = 5.0f;
     private bool isOnGround;
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
 
     public GameObject firePrefab;  // Drag your bullet (fire) prefab here in the inspector
     public Transform firePoint;    // Point from where the bullet is fired
+
+    private bool hasPowerUp;
 
     private void Awake()
     {
@@ -28,6 +30,7 @@ public class PlayerController : MonoBehaviour
     {
         normalDimension = true;
         isOnGround = true;
+        hasPowerUp = false;
     }
 
     void Update()
@@ -58,7 +61,10 @@ public class PlayerController : MonoBehaviour
         {
             Shoot();
         }
-
+        if (Input.GetKeyUp(KeyCode.F))
+        {
+            animator.SetBool("fire", false);
+        }
     }
 
     private void Run()
@@ -73,6 +79,7 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(Vector3.up * jumpSpeed, ForceMode2D.Impulse);
         isOnGround = false;
     }
+    
     private void SwapDimension()
     {
         if (normalDimension) // Switching to shadow dimension
@@ -100,6 +107,7 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+    
     private IEnumerator CountTimeInShadowDimension()
     {
         // Wait for 10 seconds in the shadow dimension
@@ -107,6 +115,7 @@ public class PlayerController : MonoBehaviour
         isInShadowCoroutine = false; // Reset the flag when coroutine ends
         SwapDimension(); // Switch back to the normal dimension
     }
+    
     private void Hide()
     {
         // Implement hide mechanic
@@ -114,6 +123,7 @@ public class PlayerController : MonoBehaviour
 
     private void Shoot()
     {
+        animator.SetBool("fire", true);
         // Instantiate the bullet
         GameObject fireInstance = Instantiate(firePrefab, firePoint.position, Quaternion.identity);
 
@@ -126,7 +136,6 @@ public class PlayerController : MonoBehaviour
         {
             fireBehaviour.SetDirection(direction);
         }
-
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -136,21 +145,16 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("jump", false);
         }
         // When in the "normal dimension", the player can interact with (stand on, collide with) "normal" platforms and pass through "shadow" platforms.
-        if (normalDimension && collision.gameObject.CompareTag("Normal Enemy"))
+        if (normalDimension && collision.gameObject.CompareTag("Enemy"))
         {
             // Handle interaction with normal enemies when in normal dimension.
-            HandleNormalEnemyInteraction();
-        }
-        else if (!normalDimension && collision.gameObject.CompareTag("Shadow Enemy"))
-        {
-            // Handle interaction with shadow enemies when in shadow dimension.
-            HandleShadowEnemyInteraction();
+            HandleEnemyInteraction();
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
 
-        if (collision.gameObject.CompareTag("End Point"))
+        if (collision.gameObject.CompareTag("Finish"))
         {
             // Trigger end of level events or transitions.
             EndLevel();
@@ -166,29 +170,29 @@ public class PlayerController : MonoBehaviour
             ActivatePowerup(collision.gameObject);
         }
     }
-    private void HandleNormalEnemyInteraction()
+    private void HandleEnemyInteraction()
     {
+        animator.SetTrigger("hurt");
+
         // Logic for when the player collides with a normal enemy in the normal dimension.
-        // Reduce player health.
-    }
-    private void HandleShadowEnemyInteraction()
-    {
-        // Logic for when the player collides with a shadow enemy in the shadow dimension.
         // Reduce player health.
     }
     private void CollectItem(GameObject item)
     {
-        // Logic to handle the collection of items.
-        // Deactivate the collected item so it disappears from the scene.
-        item.SetActive(false);
+        // Add points to the score.
+        ScoreManager.instance.AddScore(1);
+
+        // Destroy the item.
+        Destroy(item);
 
         // When collected necessary amount of items for a level, call EndLevel()
     }
     private void ActivatePowerup(GameObject powerup)
     {
         // Logic to activate a power-up.
+        hasPowerUp = true;
         // Deactivate the powerup item so it disappears.
-        powerup.SetActive(false);
+        Destroy(powerup);
     }
     private void EndLevel()
     {

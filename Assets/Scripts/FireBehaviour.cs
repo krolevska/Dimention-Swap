@@ -6,7 +6,6 @@ public class FireBehaviour : MonoBehaviour
     private float aliveTimer = 5.0f;
     private float fireStrength = 4.0f;
     private float pushStrength = 2.0f;
-
     public float FireStrength { get { return fireStrength; } }
     public float PushStrength { get { return pushStrength; } }
     public enum BulletDirection
@@ -18,14 +17,22 @@ public class FireBehaviour : MonoBehaviour
 
     public void SetDirection(float dir)
     {
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+
         if (dir > 0)
         {
             direction = BulletDirection.RIGHT;
+            spriteRenderer.flipX = false;
         }
         else
         {
             direction = BulletDirection.LEFT;
+            spriteRenderer.flipX = true;
         }
+    }
+
+    private void Start()
+    {
     }
 
     void Update()
