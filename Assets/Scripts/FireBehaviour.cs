@@ -2,18 +2,27 @@ using UnityEngine;
 
 public class FireBehaviour : MonoBehaviour
 {
-    public float speed = 15.0f;
+    public float Speed { get; } = 15.0f;
+
     private float aliveTimer = 5.0f;
     private float fireStrength = 4.0f;
     private float pushStrength = 2.0f;
-    public float FireStrength { get { return fireStrength; } }
-    public float PushStrength { get { return pushStrength; } }
+
+    public float FireStrength => fireStrength;
+    public float PushStrength => pushStrength;
+
     public enum BulletDirection
     {
         LEFT = -1,
         RIGHT = 1
     }
     private BulletDirection direction = BulletDirection.RIGHT;
+
+    private void Update()
+    {
+        Vector2 moveDirection = new Vector2((int)direction, 0);
+        transform.position += new Vector3(moveDirection.x, moveDirection.y, 0) * Speed * Time.deltaTime;
+    }
 
     public void SetDirection(float dir)
     {
@@ -29,16 +38,6 @@ public class FireBehaviour : MonoBehaviour
             direction = BulletDirection.LEFT;
             spriteRenderer.flipX = true;
         }
-    }
-
-    private void Start()
-    {
-    }
-
-    void Update()
-    {
-        Vector3 moveDirection = new Vector3((int)direction, 0, 0);
-        transform.position += moveDirection * speed * Time.deltaTime;
     }
 
     public void InitiateSelfDestruction()

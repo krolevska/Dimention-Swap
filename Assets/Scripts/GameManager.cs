@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.IO;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     private int currentLevel;
     private string[] gameState;
     private bool isGameOver;
-    private bool isGamePaused;
+    private bool isGamePaused = false;
     private bool isGameRunning;
     private bool isLevelFinished;
 
@@ -27,6 +28,24 @@ public class GameManager : MonoBehaviour
     private int highScore;
     private string highScorePlayerName;
 
+    public GameObject endLevelText, gameOverText;
+
+    public static GameManager instance;
+
+
+    private void Awake()
+    {
+        // Make sure there's only one GM instance
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -42,9 +61,16 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Escape))
         {
-            SaveAllData();
-            PauseGame();
-            GoToMenu();
+            if (isGamePaused)
+            {
+                ResumeGame();
+            }
+            else
+            {
+                SaveAllData();
+                PauseGame();
+                GoToMenu();
+            }
         }
 
         if (playerLives == 0)
@@ -52,30 +78,44 @@ public class GameManager : MonoBehaviour
             isGameOver = true;
         }
     }
-    void PauseGame()
-    {
-        isGamePaused = true;
-        isGameRunning = false;
-    }
     void GoToMenu()
     {
 
     }
+    void PauseGame()
+    {
+        isGamePaused = true;
+        isGameRunning = false;
+        Time.timeScale = 0;  // Pause the game
+
+        // Show a pause menu UI here.
+    }
+
     void ResumeGame()
     {
         isGamePaused = false;
         isGameRunning = true;
+        Time.timeScale = 1;  // Resume the game
+
+        // Hide the pause menu UI here.
     }
+
     void AddPoint(int point)
     {
         playerScore += point;
+    }
+
+    public void EndLevel()
+    {
+        isLevelFinished = true;
+        endLevelText.SetActive(true);
     }
 
     public void GameOver()
     {
         isGameOver = true;
         isGameRunning = false;
-        //GameOverText.SetActive(true);
+        gameOverText.SetActive(true);
     }
 
     [System.Serializable]
