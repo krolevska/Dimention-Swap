@@ -7,14 +7,15 @@ public class PlayerController : MonoBehaviour
 
     [Header("Movement")]
     private float forwardInput;
+    private float verticalInput;
     private float speed = 3.0f;
-    private float jumpSpeed = 5.0f;
+    private float jumpSpeed = 7.0f;
     private bool isOnGround;
+    private bool isClimbing;
 
     [Header("Shooting")]
     public GameObject firePrefab;
     public Transform firePoint;
-    private int meleeDamage = 1;
 
     [Header("Health")]
     private int maxHealth = 20;
@@ -25,10 +26,6 @@ public class PlayerController : MonoBehaviour
     private bool hasGun;
     private bool hasKnife;
     private float armorMultiplier = 1f;  // Set to less than 1 if armor is active, e.g., 0.5 for 50% reduction
-
-    [Header("States")]
-    private bool normalDimension;
-    private bool hasPowerUp;
 
     // Components
     private Rigidbody2D rb;
@@ -64,8 +61,20 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        Debug.Log("Trigger entered with tag: " + collision.gameObject.tag);
         HandleTriggerEvents(collision);
     }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Stairs"))
+        {
+            isClimbing = false;
+            rb.gravityScale = 1;
+            animator.SetBool("isClimbing", false); // You might need to add this in the Animator if you want a different behavior when exiting stairs.
+        }
+    }
+
 
     #endregion
 
@@ -73,15 +82,15 @@ public class PlayerController : MonoBehaviour
 
     private void ResetStates()
     {
-        normalDimension = true;
         isOnGround = true;
-        hasPowerUp = false;
+        isClimbing = false;
         currentHealth = maxHealth;
     }
 
     private void HandleInput()
     {
         forwardInput = Input.GetAxis("Horizontal");
+        verticalInput = Input.GetAxis("Vertical");
         HandleMovement();
         HandleActions();
     }
@@ -92,6 +101,12 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetFloat("speed", Mathf.Abs(forwardInput));
             Run();
+        }
+
+        if (verticalInput != 0 && isClimbing)
+        {
+            animator.SetFloat("climbingSpeed", Mathf.Abs(verticalInput));
+            Climb();
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && isOnGround)
@@ -111,15 +126,6 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetBool("fire", false);
         }
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            UseMeleeAttack();
-        }
-        else if (Input.GetKeyUp(KeyCode.R))
-        {
-            animator.SetBool("knife", false);
-        }
     }
 
     private void CheckPlayerHealth()
@@ -128,6 +134,11 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.instance.GameOver();
         }
+    }
+
+    private void Climb()
+    {
+        transform.Translate(Vector3.up * verticalInput * speed * Time.deltaTime);
     }
 
     private void Run()
@@ -156,14 +167,6 @@ public class PlayerController : MonoBehaviour
                 fireBehaviour.SetDirection(direction);
             }
         }        
-    }
-
-    private void UseMeleeAttack()
-    {
-        if (hasKnife)
-        {
-            animator.SetBool("knife", true);
-        }
     }
 
     private void HandleCollisionEvents(Collision2D collision)
@@ -197,21 +200,20 @@ public class PlayerController : MonoBehaviour
                 }
                 Destroy(collision.gameObject);
                 break;
+            case "Stairs":
+                Debug.Log("Entered Stairs Trigger");
+                animator.SetBool("isClimbing", true);
+                isClimbing = true;
+                rb.gravityScale = 0;
+                break;
         }
     }
 
 
     private void ProcessEnemyCollision(GameObject enemy)
     {
-        if (Input.GetKey(KeyCode.R))
-        {
-            enemy.GetComponent<Enemy>().TakeDamage(meleeDamage);
-        }
-        else
-        {
             animator.SetTrigger("hurt");
             TakeDamage(enemy.GetComponent<Enemy>().enemyDamage);
-        }
     }
 
 
@@ -235,10 +237,6 @@ public class PlayerController : MonoBehaviour
             case PowerUpType.Gun:
                 hasGun = true;
                 break;
-            case PowerUpType.Knife:
-                hasKnife = true;
-                meleeDamage = 5;
-                break;
             default:
                 break;
         }
@@ -248,6 +246,7 @@ public class PlayerController : MonoBehaviour
     {
         currentHealth -= (int)(damage * armorMultiplier);  // Use currentHealth here, and convert to int if damage isn't an integer
         CheckPlayerHealth();  // Check player's health immediately after taking damage
+        ScoreManager.instance.DecreaseHealth(damage);
     }
     #endregion
 }

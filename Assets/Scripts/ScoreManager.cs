@@ -5,7 +5,26 @@ public class ScoreManager : MonoBehaviour
 {
     public int score = 0;
     public TextMeshProUGUI text;
-    public int necessaryScore = 10;
+    public int necessaryScore = 50;
+
+    public int health;
+    public TextMeshProUGUI healthText;
+
+    private void UpdateHealthText()
+    {
+        healthText.text = "Health: " + health;
+    }
+
+    public void DecreaseHealth(float damage)
+    {
+        health -= (int)damage;
+        UpdateHealthText();
+
+        if (health <= 0)
+        {
+            GameManager.instance.GameOver();
+        }
+    }
 
     // Static singleton instance
     public static ScoreManager instance;
@@ -25,6 +44,8 @@ public class ScoreManager : MonoBehaviour
 
         // Reset the score.
         score = 0;
+        health = 20;
+        UpdateHealthText();
         UpdateScoreText();
     }
 

@@ -9,7 +9,6 @@ public class CollectiblesSpawn : MonoBehaviour
     public Tilemap groundTilemap;
     public float spawnHeightAboveTile = 1.5f;
     public int maxCollectibles = 100;
-    public int requiredCollectibles = 70;
     public int tileSpacing = 5; // Number of tiles to skip before attempting another spawn
 
     private int spawnedCollectibles = 0;

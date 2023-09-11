@@ -6,8 +6,7 @@ public enum PowerUpType
     None,
     Armor,
     Drug,
-    Gun,
-    Knife
+    Gun
 }
 
 public class PowerUp : MonoBehaviour
