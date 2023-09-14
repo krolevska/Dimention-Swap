@@ -22,7 +22,7 @@ public class ScoreManager : MonoBehaviour
 
         if (health <= 0)
         {
-            GameManager.instance.GameOver();
+            LevelManager.instance.GameOver();
         }
     }
 
@@ -58,10 +58,5 @@ public class ScoreManager : MonoBehaviour
     {
         score += newScoreValue;
         UpdateScoreText(); // Update the score text when the score changes
-
-        if (score == necessaryScore)
-        {
-            GameManager.instance.EndLevel();
-        }
     }
 }

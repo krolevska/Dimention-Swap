@@ -16,11 +16,11 @@ public class InstructionTrigger : MonoBehaviour
     public GameObject message;
 
     public TextMeshProUGUI instructionText;
-    public string howToRun = "Press 'D' to move forward and 'A' to move back.";
-    public string howToJump = "Press 'Space' to jump.";
-    public string howToClimb = "Press 'S' to climb down and 'W' to climb up.";
-    public string howToFire = "Press 'F' to fire toward an enemy.";
-    public string collectThemAll = "You need to collect 50 pieces of data so you could proceed to the finish.";
+    private string howToRun = "Press 'D' to move forward and 'A' to move back.";
+    private string howToJump = "Press 'Space' to jump.";
+    private string howToClimb = "Press 'S' to climb down and 'W' to climb up.";
+    private string howToFire = "Press 'F' to fire toward an enemy.";
+    private string collectThemAll = "You need to collect 50 pieces of data so you could proceed to the finish.";
 
     private string GetMessage()
     {

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2166941223410212727}
   - component: {fileID: -6348166059063253435}
   - component: {fileID: 2342318305973316992}
+  - component: {fileID: 2209043832548507083}
   m_Layer: 0
   m_Name: Normal Enemy
   m_TagString: Enemy
@@ -172,7 +173,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 007396e838788464cb77a8b67c197795, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 0
+  health: 20
+  enemyDamage: 5
   speed: 1.5
   patrolDistance: 3
   chaseRange: 5
@@ -198,3 +200,17 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2209043832548507083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5393097116092162264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30acb38bb8026944086a1bad3e5dafeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minX: -8.5
+  maxX: 26

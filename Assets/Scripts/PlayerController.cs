@@ -132,7 +132,7 @@ public class PlayerController : MonoBehaviour
     {
         if (currentHealth <= 0)
         {
-            GameManager.instance.GameOver();
+            LevelManager.instance.GameOver();
         }
     }
 
@@ -187,7 +187,8 @@ public class PlayerController : MonoBehaviour
         switch (collision.gameObject.tag)
         {
             case "Finish":
-                GameManager.instance.EndLevel();
+                if (ScoreManager.instance.score >= ScoreManager.instance.necessaryScore)
+                    LevelManager.instance.EndLevel();
                 break;
             case "Collectible":
                 CollectItem(collision.gameObject);

@@ -15,8 +15,8 @@ public class Enemy : MonoBehaviour
     private float originalX;
 
     [Header("Chase Player")]
-    public float chaseRange = 5f;
-    public float chaseSpeed = 2.5f;
+    public float chaseRange = 4f;
+    public float chaseSpeed = 2f;
     private Transform player;
 
 

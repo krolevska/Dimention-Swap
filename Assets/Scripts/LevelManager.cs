@@ -1,38 +1,90 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 
 public class LevelManager : MonoBehaviour
 {
-    public float spawnRate = 10f;
+    public static LevelManager instance;
 
-    // Start is called before the first frame update
-
-    private void Start()
+    public enum GameState
     {
-        InvokeRepeating("SpawnEnemy", 2f, spawnRate);
+        GameRunning,
+        GamePaused,
+        GameOver,
+        LevelFinished
     }
 
-    // Update is called once per frame
-    void Update()
+    public GameState currentState = GameState.GameRunning;
+
+    public GameObject endLevelText, gameOverText;
+    private void Awake()
     {
-        
-    }
-
-    void SpawnEnemy()
-    {
-        float randomX = Random.Range(-4f, 4f);
-        Vector2 spawnPosition = new Vector2(randomX, transform.position.y);
-
-        GameObject enemy = EnemyPooler.Instance.GetEnemy();
-
-        if (enemy != null)
+        if (instance == null)
         {
-            enemy.transform.position = spawnPosition;
+            instance = this;
         }
         else
         {
-            Debug.Log("No enemies");
+            Destroy(gameObject);
+            return;
         }
+    }
+    void Start()
+    {
+        currentState = GameState.GameRunning;
+    }
+
+    void Update()
+    {
+        switch (currentState)
+        {
+            case GameState.GameRunning:
+                if (Input.GetKeyUp(KeyCode.Escape))
+                {
+                    currentState = GameState.GamePaused;
+                    PauseGame();
+                }
+                break;
+
+            case GameState.GamePaused:
+                if (Input.GetKeyUp(KeyCode.Escape))
+                {
+                    currentState = GameState.GameRunning;
+                    ResumeGame();
+                }
+                break;
+        }
+    }
+
+    void GoToMenu()
+    {
+        // Go to Menu logic
+    }
+
+    void PauseGame()
+    {
+        Time.timeScale = 0; 
+        // Other Pause logic
+    }
+
+    void ResumeGame()
+    {
+        Time.timeScale = 1; 
+        // Other Resume logic
+    }
+
+    public void EndLevel()
+    {
+        currentState = GameState.LevelFinished;
+        endLevelText.SetActive(true);
+    }
+
+    public void GameOver()
+    {
+        currentState = GameState.GameOver;
+        gameOverText.SetActive(true);
     }
 }
