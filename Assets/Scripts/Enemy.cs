@@ -46,13 +46,18 @@ public class Enemy : MonoBehaviour
     {
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-        if (distanceToPlayer < chaseRange)
+        if (distanceToPlayer < chaseRange && !GameObject.FindGameObjectWithTag("Player").GetComponent<Animator>().GetBool("dead"))
         {
             ChasePlayer();
         }
         else
         {
             Patrol();
+        }
+
+        if (LevelManager.instance.levelState == LevelManager.LevelState.ShadowDimension)
+        {
+            gameObject.SetActive(false);
         }
     }
 

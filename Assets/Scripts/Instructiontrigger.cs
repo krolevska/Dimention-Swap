@@ -7,7 +7,8 @@ public enum InstructionType
     Jump,
     Climb,
     Fire,
-    CollectAll
+    CollectAll,
+    Dimension
 }
 
 public class InstructionTrigger : MonoBehaviour
@@ -21,6 +22,8 @@ public class InstructionTrigger : MonoBehaviour
     private string howToClimb = "Press 'S' to climb down and 'W' to climb up.";
     private string howToFire = "Press 'F' to fire toward an enemy.";
     private string collectThemAll = "You need to collect 50 pieces of data so you could proceed to the finish.";
+    private string switchDimension = "You can hide in the Shadow Dimension to avoid Police. Though, you wouldn't be able to gather the data from Shadow. Press 'R' to switch dimensions";
+
 
     private string GetMessage()
     {
@@ -36,6 +39,8 @@ public class InstructionTrigger : MonoBehaviour
                 return howToFire;
             case InstructionType.CollectAll:
                 return collectThemAll;
+                case InstructionType.Dimension:
+                return switchDimension;
             default:
                 return "";
         }

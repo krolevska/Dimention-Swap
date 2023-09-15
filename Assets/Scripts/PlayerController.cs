@@ -133,6 +133,7 @@ public class PlayerController : MonoBehaviour
         if (currentHealth <= 0)
         {
             LevelManager.instance.GameOver();
+            animator.SetBool("dead", true);
         }
     }
 
@@ -191,7 +192,10 @@ public class PlayerController : MonoBehaviour
                     LevelManager.instance.EndLevel();
                 break;
             case "Collectible":
-                CollectItem(collision.gameObject);
+                if (LevelManager.instance.levelState == LevelManager.LevelState.NormalDimension)
+                {
+                    CollectItem(collision.gameObject);
+                }
                 break;
             case "Powerup":
                 PowerUp powerUpComponent = collision.gameObject.GetComponent<PowerUp>();

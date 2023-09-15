@@ -1,6 +1,8 @@
 // GameManager.cs
 using UnityEngine;
 using System.IO;
+using UnityEngine.SceneManagement;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -17,6 +19,8 @@ public class GameManager : MonoBehaviour
     private int graphicsQuality;
     private int highScore;
     private string highScorePlayerName;
+
+    private int previousSceneIndex;
 
     public int PlayerLives
     {
@@ -47,6 +51,19 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Escape))
         {
             SaveAllData();
+        }
+    }
+
+    public void StoreCurrentScene()
+    {
+        previousSceneIndex = SceneManager.GetActiveScene().buildIndex;
+    }
+
+    public void LoadPreviousScene()
+    {
+        if (previousSceneIndex >= 0)
+        {
+            SceneManager.LoadScene(previousSceneIndex);
         }
     }
 
