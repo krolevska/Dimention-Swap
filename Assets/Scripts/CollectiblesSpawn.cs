@@ -8,8 +8,8 @@ public class CollectiblesSpawn : MonoBehaviour
     public GameObject[] collectiblePrefabs;
     public Tilemap groundTilemap;
     public float spawnHeightAboveTile = 1.5f;
-    public int maxCollectibles = 100;
-    public int tileSpacing = 5; // Number of tiles to skip before attempting another spawn
+    public int minCollectibles = 100; // Changed from maxCollectibles to minCollectibles
+    public int tileSpacing = 5;
 
     private int spawnedCollectibles = 0;
 
@@ -23,7 +23,7 @@ public class CollectiblesSpawn : MonoBehaviour
         BoundsInt bounds = groundTilemap.cellBounds;
         TileBase[] allTiles = groundTilemap.GetTilesBlock(bounds);
 
-        int tileCount = 0; // Count tiles we've gone over
+        List<Vector2> possibleSpawnPoints = new List<Vector2>();
 
         for (int x = 0; x < bounds.size.x; x++)
         {
@@ -33,11 +33,6 @@ public class CollectiblesSpawn : MonoBehaviour
 
                 if (tile != null)
                 {
-                    tileCount++;
-
-                    if (tileCount % tileSpacing != 0) // Only try to spawn every 'tileSpacing' tiles
-                        continue;
-
                     Vector3Int cellPosition = new Vector3Int(x + bounds.xMin, y + bounds.yMin, 0);
                     Vector3 worldPos = groundTilemap.GetCellCenterWorld(cellPosition);
 
@@ -47,15 +42,24 @@ public class CollectiblesSpawn : MonoBehaviour
 
                     if (hit.collider == null)
                     {
-                        int randomCollectibleIndex = Random.Range(0, collectiblePrefabs.Length);
-                        Instantiate(collectiblePrefabs[randomCollectibleIndex], spawnPosition, Quaternion.identity);
-                        spawnedCollectibles++;
-
-                        if (spawnedCollectibles >= maxCollectibles)
-                            return;
+                        possibleSpawnPoints.Add(spawnPosition);
                     }
                 }
             }
         }
+
+        Debug.Log("Possible spawn points: " + possibleSpawnPoints.Count);
+
+        while (spawnedCollectibles < minCollectibles && possibleSpawnPoints.Count > 0)
+        {
+            int randomIndex = Random.Range(0, possibleSpawnPoints.Count);
+            Vector2 randomSpawnPoint = possibleSpawnPoints[randomIndex];
+            possibleSpawnPoints.RemoveAt(randomIndex);
+
+            int randomCollectibleIndex = Random.Range(0, collectiblePrefabs.Length);
+            Instantiate(collectiblePrefabs[randomCollectibleIndex], randomSpawnPoint, Quaternion.identity);
+            spawnedCollectibles++;
+        }
     }
+
 }
